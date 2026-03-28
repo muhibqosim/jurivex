@@ -14,74 +14,111 @@ function myFunction(x) {
 
 
 
-/*gallery starts here*/
+/* =========================
+   GALLERY STARTS HERE
+========================= */
 
 let galleryImages = [];
-let galleryCurrentIndex = 0; // Renamed to avoid conflict
+let galleryCurrentIndex = 0;
 
 // Fetch images from API
 function fetchImages() {
-    const url = "https://galleria.sgm.ng/wJQfKcds8vhhSPeU8";
-
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (Array.isArray(data)) {
-                galleryImages = data.filter(img => img && img.trim() !== ""); // Remove empty images
-                updateGallery();
-            } else {
-                console.error("Invalid data format:", data);
-            }
-        })
-        .catch(error => console.error("Error fetching images:", error));
+  const url = "https://galleria.sgm.ng/cDf3jbbZaDWWvdLT7";
+  
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      
+      if (Array.isArray(data) && data.length > 0) {
+        galleryImages = data.filter(img => img && img.trim() !== "");
+        updateGallery();
+      } else {
+        console.log("No images found yet.");
+      }
+      
+    })
+    .catch(error => console.error("Error fetching images:", error));
 }
 
-// Update the slider with new images
+
+// Update gallery slider
 function updateGallery() {
-    const slider = document.getElementById("gallery-slider"); 
-    slider.innerHTML = ""; 
-
-    galleryImages.forEach((imageUrl, index) => {
-        let img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = "Gallery Image";
-        img.className = "w-full h-69 md:h-96 object-contain flex-shrink-0";
-        img.style.display = index === 0 ? "block" : "none";
-        slider.appendChild(img);
-    });
+  const slider = document.getElementById("gallery-slider");
+  
+  if (!slider) return;
+  
+  slider.innerHTML = "";
+  
+  galleryImages.forEach((imageUrl, index) => {
+    
+    let img = document.createElement("img");
+    
+    img.src = imageUrl;
+    img.alt = "Jurivex Gallery Image";
+    
+    // Hide image until it fully loads
+    img.style.display = "none";
+    
+    img.className = "w-full h-96 md:h-[500px] object-cover rounded-lg";
+    
+    // Show image only after it has loaded
+    img.onload = function() {
+      if (index === 0) {
+        img.style.display = "block";
+        galleryCurrentIndex = 0;
+      }
+    };
+    
+    slider.appendChild(img);
+  });
 }
 
-// Move to the next slide
+// Next slide
 function nextSlide() {
-    let slides = document.querySelectorAll("#gallery-slider img"); 
-    if (slides.length === 0) return;
-
-    slides[galleryCurrentIndex].style.display = "none";
-    galleryCurrentIndex = (galleryCurrentIndex + 1) % slides.length;
-    slides[galleryCurrentIndex].style.display = "block";
+  const slides = document.querySelectorAll("#gallery-slider img");
+  
+  if (slides.length <= 1) return;
+  
+  slides[galleryCurrentIndex].style.display = "none";
+  
+  galleryCurrentIndex = (galleryCurrentIndex + 1) % slides.length;
+  
+  slides[galleryCurrentIndex].style.display = "block";
 }
 
-// Move to the previous slide
+
+// Previous slide
 function prevSlide() {
-    let slides = document.querySelectorAll("#gallery-slider img"); 
-    if (slides.length === 0) return;
-
-    slides[galleryCurrentIndex].style.display = "none";
-    galleryCurrentIndex = (galleryCurrentIndex - 1 + slides.length) % slides.length;
-    slides[galleryCurrentIndex].style.display = "block";
+  const slides = document.querySelectorAll("#gallery-slider img");
+  
+  if (slides.length <= 1) return;
+  
+  slides[galleryCurrentIndex].style.display = "none";
+  
+  galleryCurrentIndex = (galleryCurrentIndex - 1 + slides.length) % slides.length;
+  
+  slides[galleryCurrentIndex].style.display = "block";
 }
 
-// Auto-slide every 3 seconds
-setInterval(nextSlide, 3000);
 
-// Auto-refresh images every 60 seconds
+// Auto slide every 3 seconds (only if more than one image exists)
+setInterval(() => {
+  if (galleryImages.length > 1) {
+    nextSlide();
+  }
+}, 3000);
+
+// Refresh images every 60 seconds (so new Google Photos images appear automatically)
 setInterval(fetchImages, 60000);
 
-// Fetch images on page load
+
+// Load images immediately when page loads
 document.addEventListener("DOMContentLoaded", fetchImages);
 
-/*gallery ends here*/
 
+/* =========================
+   GALLERY ENDS HERE
+========================= */
 
 //Footer
 document.addEventListener('DOMContentLoaded', function() {
